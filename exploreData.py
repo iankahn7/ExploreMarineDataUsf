@@ -79,7 +79,7 @@ if testingFlag:
         print(row)
 
 # Plotting example for a specific station (optional)
-station_to_plot = 1 # Change this to the index of the station you want to plot
+station_to_plot = 18 # Change this to the index of the station you want to plot
 
 station_to_plot = station_to_plot - 1
 plot_data = average_data[average_data['StationIndex'] == station_to_plot]
