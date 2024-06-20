@@ -69,6 +69,8 @@ def filter_data_by_month_range(start_date, end_date, target_month):
     return filtered_timeStamps, filtered_data
 
 # Parsing the datetimes into times that Python can read and graph
+
+
 "*********************************************************************"
 timeStamps = [datetime.strptime(t,'%m/%d/%Y %H:') for t in t_ref_char]
 "*********************************************************************"

@@ -133,18 +133,14 @@ plt.title(f'Plot of Water Level (CM) at {strippedName} in noaa_raw data set')
 plt.xlabel('Time')
 plt.ylabel('Water Level (CM)')
 
-# Save the line plot as a high-resolution JPEG
-plt.savefig(os.path.join(save_directory, f'data_plot_{strippedName}.jpg'), dpi=300)
 
 # Show the line plot
 plt.show()
 
 
 
-"""
 # Open Google Earth in the browser with the coordinates, zoomed in closely
 latitude = lat[grabIndex][0]
 longitude = lon[grabIndex][0]
 google_earth_url = f'https://earth.google.com/web/@{latitude},{longitude},50a,35y,0h,0t,0r'
 webbrowser.open(google_earth_url)
-"""
