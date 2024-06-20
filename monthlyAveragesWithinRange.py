@@ -85,6 +85,13 @@ def plot_average_over_raw(station_index, start_year, end_year):
     raw_dates = [timeStamps[i] for i in raw_data_indices]
     raw_levels = [noaa_raw[i, station_index] for i in raw_data_indices]
     
+    
+    
+    """
+    ***********************************************
+    need to impose minimum number of days per month
+    """
+    
     "************************************************************************************"
     # Remove NaN values from the raw data
     raw_dates = [date for date, level in zip(raw_dates, raw_levels) if not np.isnan(level)]
@@ -107,9 +114,9 @@ def plot_average_over_raw(station_index, start_year, end_year):
 # Example usage of the helper function
 
 "*******************************************************************************"
-station_to_plot = 0  # Change this to the index of the station you want to plot
-start_year = 2000
-end_year = 2001
+station_to_plot = 17  # Change this to the index of the station you want to plot
+start_year = 1960
+end_year = 2010
 "********************************************************************************"
 
 

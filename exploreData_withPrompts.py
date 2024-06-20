@@ -137,8 +137,6 @@ plt.ylabel('Water Level (CM)')
 # Show the line plot
 plt.show()
 
-
-
 # Open Google Earth in the browser with the coordinates, zoomed in closely
 latitude = lat[grabIndex][0]
 longitude = lon[grabIndex][0]
