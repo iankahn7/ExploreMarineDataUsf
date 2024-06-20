@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Jun 17 12:06:41 2024
+Created on Thu Jun 20 12:06:58 2024
 
-@author:  Ian Kahn
-    
+@author: ikahn
 """
 import os
 import scipy.io
@@ -21,6 +20,7 @@ timeStamps = [datetime.strptime(t, '%m/%d/%Y %H:') for t in t_ref_char]
 # Load the water level data
 mat = scipy.io.loadmat('noaa.mat')
 noaa_raw = mat['noaa_raw']
+station_names = mat['name']
 
 # Function to convert datetime object to its components
 def datetime_to_vector(dt):
@@ -65,20 +65,44 @@ if testingFlag:
     for row in average_data[:10]:
         print(row)
 
-# Plotting example for a specific station (optional)
+# Helper function to plot the average data over the raw data
+def plot_average_over_raw(station_index, start_year, end_year):
+    # Filter the data for the specified station and years
+    filtered_data = average_data[(average_data['StationIndex'] == station_index) &
+                                 (average_data['Year'] >= start_year) &
+                                 (average_data['Year'] <= end_year)]
+    
+    dates = [datetime(year=row['Year'], month=row['Month'], day=1) for row in filtered_data]
+    avg_levels = filtered_data['AverageWaterLevel']
+    
+    # Find the indices for the specified years in the raw data
+    start_date = datetime(start_year, 1, 1)
+    end_date = datetime(end_year, 12, 31)
+    mask = [(start_date <= ts <= end_date) for ts in timeStamps]
+    raw_data_indices = np.argwhere(mask).flatten()
+    
+    raw_dates = [timeStamps[i] for i in raw_data_indices]
+    raw_levels = [noaa_raw[i, station_index] for i in raw_data_indices]
+    
+    # Retrieve the station name
+    station_name = station_names[station_index][0][0]
+    
+    plt.figure(figsize=(10, 6))
+    plt.plot(raw_dates, raw_levels, label='Raw Data', alpha=0.5)
+    plt.plot(dates, avg_levels, label='Monthly Average', marker='o', color='red')
+    plt.title(f'Raw Data and Monthly Average Water Level for {station_name} (Years: {start_year}-{end_year})')
+    plt.xlabel('Date')
+    plt.ylabel('Water Level (CM)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+# Example usage of the helper function
+
+
+"*******************************************************************************"
 station_to_plot = 0  # Change this to the index of the station you want to plot
-
-plot_data = average_data[average_data['StationIndex'] == station_to_plot]
-
-plt.figure(figsize=(10, 6))
-plt.plot([datetime(year=row['Year'], month=row['Month'], day=1) for row in plot_data], plot_data['AverageWaterLevel'])
-plt.title(f'Monthly Average Water Level for Station {station_to_plot}')
-plt.xlabel('Date')
-plt.ylabel('Average Water Level (CM)')
-plt.show()
-
-
-#choose the first 3 months of time that i have and print it to the screen 
-#(print the average water levels CM)
-#and compute it manually , 
-#overlay the monthly average over the raw data for a year or 2
+start_year = 2002
+end_year = 2003
+"********************************************************************************"
+plot_average_over_raw(station_to_plot, start_year, end_year)
