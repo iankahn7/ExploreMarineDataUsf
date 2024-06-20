@@ -1,93 +1,97 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Mon Jun 20  2024
+
+@author:  Ian Kahn
+
+This Python script processes and analyzes time reference data and water level data 
+from MATLAB .mat files. It loads the time reference data from the tchar.mat file, 
+converts them into Python datetime objects, and extracts the year, month, day, 
+and hour components from each datetime object. It also loads water level data 
+from the noaa.mat file and calculates the monthly average water levels for each 
+station, saving the results in a new matrix. The script leverages the scipy.io 
+module for loading MATLAB files and the datetime module for datetime manipulations.
+"""
+
 import os
 import scipy.io
 import matplotlib.pyplot as plt
 import numpy as np
-import webbrowser
+from datetime import datetime
 
-# Load the .mat file
-mat = scipy.io.loadmat('noaa.mat')
+print("loading data and creating graph \n")
+# Load the .mat file containing time references
 timeMat = scipy.io.loadmat('tchar.mat')
+t_ref_char = timeMat['t_ref_char']
 
-# Access the variables
-lat = mat['lat']
-lon = mat['lon']
-name = mat['name']
+# Convert datetime strings to datetime objects
+timeStamps = [datetime.strptime(t, '%m/%d/%Y %H:') for t in t_ref_char]
+
+# Function to convert datetime object to its components
+def datetime_to_vector(dt):
+    return [dt.year, dt.month, dt.day, dt.hour]
+
+# Apply the function to each datetime object in the timeStamps list
+vectors = [datetime_to_vector(dt) for dt in timeStamps]
+
+# Load the water level data and station names
+mat = scipy.io.loadmat('noaa.mat')
 noaa_raw = mat['noaa_raw']
+station_names = mat['name']
 
-# Create output directory for saving plots and text file
-save_directory = 'C:\\Users\\ikahn\\Desktop\\unm\\IanKahn_RESUMES\\ocean_sci\\usf_making_waves\\Research\\screenshots'
-save_directory_data = 'C:\\Users\\ikahn\\Desktop\\unm\\IanKahn_RESUMES\\ocean_sci\\usf_making_waves\\Research\\screenshots\\outputData'
-os.makedirs(save_directory, exist_ok=True)
 
-def write_site_info_to_txt(filename, current_index):
-    """
-    Write site information to a text file with a star marker for the current index.
 
-    Parameters:
-    - filename (str): Name of the text file to write.
-    - current_index (int): Index of the current site to mark with a star.
-    """
-    with open(filename, 'w') as f:
-        for i in range(len(name)):
-            grabbedName = name[i][0][0].strip()
-            latitude = lat[i][0]
-            longitude = lon[i][0]
-            
-            if i == current_index:
-                f.write(f"* Site {i+1}:\n")
-            else:
-                f.write(f"  Site {i+1}:\n")
-                
-            f.write(f"    Name: {grabbedName}\n")
-            f.write(f"    Latitude: {latitude:.8f}\n")
-            f.write(f"    Longitude: {longitude:.8f}\n")
-            f.write("--------------------\n")
 
-# Example usage
-grabIndex = 8  # aka station number
+# Initialize a dictionary to store the monthly averages
+monthly_averages = {}
 
-# Write site information to text file
-write_site_info_to_txt(os.path.join(save_directory_data, 'site_info.txt'), grabIndex)
+# Loop over each station
+for station_index in range(noaa_raw.shape[1]):
+    # Loop over each datetime vector and corresponding water level
+    for vector, water_level in zip(vectors, noaa_raw[:, station_index]):
+        year, month, _, _ = vector
+        key = (year, month, station_index)
+        
+        if key not in monthly_averages:
+            monthly_averages[key] = []
+        
+        monthly_averages[key].append(water_level)
 
-# Scatter plot with all the latitude and longitude from this file
-plt.figure(figsize=(10, 6))
-plt.scatter(lon, lat)
-plt.title('Latitude and Longitude of Tide Gauges')
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
+# Calculate the average for each month and station
+average_matrix = {}
 
-# Showing index number of which site it is:
-for i in range(len(name)):
-    plt.text(lon[i], lat[i], str(i+1), fontsize=8)
+for key, values in monthly_averages.items():
+    year, month, station_index = key
+    average_matrix[key] = np.mean(values)
 
-# Highlight the current site with a star marker
-plt.text(lon[grabIndex], lat[grabIndex], '*', fontsize=12, color='red', ha='center', va='center')
+# Convert the dictionary to a structured array for saving
+dtype = [('Year', 'i4'), ('Month', 'i4'), ('StationIndex', 'i4'), ('AverageWaterLevel', 'f4')]
+average_data = np.array([(year, month, station_index, avg) for (year, month, station_index), avg in average_matrix.items()], dtype=dtype)
 
-# Save the scatter plot as a high-resolution JPEG
-plt.savefig(os.path.join(save_directory, 'latitude_longitude_tide_gauges.jpg'), dpi=300)
+# Save the structured array to a .npz file
+np.savez('monthly_average_water_levels.npz', average_data=average_data)
 
-# Show the scatter plot
-plt.show()
+# Display some of the average data for verification if testingFlag is set to True
+testingFlag = False
+if testingFlag:
+    print("Year  Month  StationIndex  AverageWaterLevel")
+    for row in average_data[:10]:
+        print(row)
 
-# Line plot of data at the given index
-grabbedName = name[grabIndex][0][0]
+# Plotting example for a specific station (optional)
+station_to_plot = 1 # Change this to the index of the station you want to plot
+
+station_to_plot = station_to_plot - 1
+plot_data = average_data[average_data['StationIndex'] == station_to_plot]
+
+# Get the station name
+grabbedName = station_names[station_to_plot][0][0]
 strippedName = grabbedName.strip()
-dataGrab = noaa_raw[:, grabIndex]
 
+station_to_plot = station_to_plot + 1
 plt.figure(figsize=(10, 6))
-plt.plot(dataGrab)
-plt.title(f'Plot of Data at {strippedName} in noaa_raw data set')
-plt.xlabel('Time')
-plt.ylabel('Value')
-
-# Save the line plot as a high-resolution JPEG
-plt.savefig(os.path.join(save_directory, f'data_plot_{strippedName}.jpg'), dpi=300)
-
-# Show the line plot
+plt.plot([datetime(year=row['Year'], month=row['Month'], day=1) for row in plot_data], plot_data['AverageWaterLevel'])
+plt.title(f'Monthly Average Water Level for {strippedName} (Station {station_to_plot})')
+plt.xlabel('Date')
+plt.ylabel('Average Water Level (CM)')
 plt.show()
-
-# Open Google Earth in the browser with the coordinates, zoomed in closely
-latitude = lat[grabIndex][0]
-longitude = lon[grabIndex][0]
-google_earth_url = f'https://earth.google.com/web/@{latitude},{longitude},200a,35y,0h,0t,0r'
-webbrowser.open(google_earth_url)
