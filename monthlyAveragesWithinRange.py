@@ -42,7 +42,8 @@ for station_index in range(noaa_raw.shape[1]):
         if key not in monthly_averages:
             monthly_averages[key] = []
         
-        monthly_averages[key].append(water_level)
+        if not np.isnan(water_level):  # Check for NaN and ignore if NaN
+            monthly_averages[key].append(water_level)
 
 # Calculate the average for each month and station
 average_matrix = {}
@@ -84,6 +85,12 @@ def plot_average_over_raw(station_index, start_year, end_year):
     raw_dates = [timeStamps[i] for i in raw_data_indices]
     raw_levels = [noaa_raw[i, station_index] for i in raw_data_indices]
     
+    "************************************************************************************"
+    # Remove NaN values from the raw data
+    raw_dates = [date for date, level in zip(raw_dates, raw_levels) if not np.isnan(level)]
+    raw_levels = [level for level in raw_levels if not np.isnan(level)]
+    
+    
     # Retrieve the station name
     station_name = station_names[station_index][0][0]
     
@@ -99,10 +106,11 @@ def plot_average_over_raw(station_index, start_year, end_year):
 
 # Example usage of the helper function
 
-
 "*******************************************************************************"
 station_to_plot = 0  # Change this to the index of the station you want to plot
-start_year = 2002
-end_year = 2003
+start_year = 2000
+end_year = 2001
 "********************************************************************************"
+
+
 plot_average_over_raw(station_to_plot, start_year, end_year)
