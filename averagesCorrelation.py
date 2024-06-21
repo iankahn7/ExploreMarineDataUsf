@@ -15,7 +15,6 @@ Negative Correlation: If the points tend to lie along a line that slopes downwar
 No Correlation: If the points are widely scattered with no discernible pattern, it indicates little to no correlation between the water levels at the two stations.
 """
 
-
 import os
 import scipy.io
 import matplotlib.pyplot as plt
@@ -28,7 +27,7 @@ timeMat = scipy.io.loadmat('tchar.mat')
 t_ref_char = timeMat['t_ref_char']
 
 # Convert datetime strings to datetime objects
-timeStamps = [datetime.strptime(t, '%m/%d/%Y %H:') for t in t_ref_char]
+timeStamps = [datetime.strptime(t, '%m/%d/%Y %H:') for t in t_ref_char.flatten()]
 
 # Load the water level data
 mat = scipy.io.loadmat('noaa.mat')
@@ -79,8 +78,6 @@ if testingFlag:
     for row in average_data[:10]:
         print(row)
 
-
-
 # Helper function to plot correlation between two stations
 def plot_correlation(station_index1, station_index2):
     # Filter data for the specified stations
@@ -92,35 +89,45 @@ def plot_correlation(station_index1, station_index2):
                    set((row['Year'], row['Month']) for row in filtered_data2))
     
     # Prepare data for plotting
-    data1 = []
-    data2 = []
+    data1_january = []
+    data2_january = []
+    data1_july = []
+    data2_july = []
     
     for year, month in common_dates:
         avg_level1 = filtered_data1[(filtered_data1['Year'] == year) & (filtered_data1['Month'] == month)]['AverageWaterLevel']
         avg_level2 = filtered_data2[(filtered_data2['Year'] == year) & (filtered_data2['Month'] == month)]['AverageWaterLevel']
         if avg_level1.size > 0 and avg_level2.size > 0:
-            data1.append(avg_level1[0])
-            data2.append(avg_level2[0])
+            if month == 1:  # January
+                data1_january.append(avg_level1[0])
+                data2_january.append(avg_level2[0])
+            elif month == 7:  # July
+                data1_july.append(avg_level1[0])
+                data2_july.append(avg_level2[0])
     
     # Retrieve the station names
     station_name1 = station_names[station_index1][0][0]
     station_name2 = station_names[station_index2][0][0]
     
     plt.figure(figsize=(10, 6))
-    plt.scatter(data1, data2)
+    plt.scatter(data1_january, data2_january, color='blue', label='January')
+    plt.scatter(data1_july, data2_july, color='red', label='July')
     plt.title(f'Correlation between {station_name1} and {station_name2} Monthly Averages')
     plt.xlabel(station_name1)
     plt.ylabel(station_name2)
+    plt.legend()
     plt.grid(True)
     plt.show()
 
 # Plot correlation between two stations
 
 "station_index == site number "
-station_index1 =  0  # Change this to the first station index
-station_index2 = 17 # Change this to the second station index
 
-
+"************************************************************"
+station_index1 =  2 # Change this to the first station index
+station_index2 = 4 # Change this to the second station index
+"************************************************************"
 
 plot_correlation(station_index1, station_index2)
 
+"*************************************************************"

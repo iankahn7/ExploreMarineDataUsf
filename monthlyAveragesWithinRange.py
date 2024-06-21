@@ -85,18 +85,9 @@ def plot_average_over_raw(station_index, start_year, end_year):
     raw_dates = [timeStamps[i] for i in raw_data_indices]
     raw_levels = [noaa_raw[i, station_index] for i in raw_data_indices]
     
-    
-    
-    """
-    ***********************************************
-    need to impose minimum number of days per month
-    """
-    
-    "************************************************************************************"
     # Remove NaN values from the raw data
     raw_dates = [date for date, level in zip(raw_dates, raw_levels) if not np.isnan(level)]
     raw_levels = [level for level in raw_levels if not np.isnan(level)]
-    
     
     # Retrieve the station name
     station_name = station_names[station_index][0][0]
@@ -111,13 +102,43 @@ def plot_average_over_raw(station_index, start_year, end_year):
     plt.grid(True)
     plt.show()
 
-# Example usage of the helper function
+# Helper function to plot only January and July data points
+def plot_january_july(station_index, start_year, end_year):
+    # Filter the data for the specified station and years
+    filtered_data = average_data[(average_data['StationIndex'] == station_index) &
+                                 (average_data['Year'] >= start_year) &
+                                 (average_data['Year'] <= end_year)]
+    
+    january_dates = [datetime(year=row['Year'], month=row['Month'], day=1) for row in filtered_data if row['Month'] == 1]
+    july_dates = [datetime(year=row['Year'], month=row['Month'], day=1) for row in filtered_data if row['Month'] == 7]
+    
+    january_levels = [row['AverageWaterLevel'] for row in filtered_data if row['Month'] == 1]
+    july_levels = [row['AverageWaterLevel'] for row in filtered_data if row['Month'] == 7]
+    
+    # Retrieve the station name
+    station_name = station_names[station_index][0][0]
+    
+    plt.figure(figsize=(10, 6))
+    plt.scatter(january_dates, january_levels, color='blue', label='January')
+    plt.scatter(july_dates, july_levels, color='red', label='July')
+    plt.title(f'January and July Average Water Levels for {station_name} (Years: {start_year}-{end_year})')
+    plt.xlabel('Date')
+    plt.ylabel('Water Level (CM)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
-"*******************************************************************************"
-station_to_plot = 17  # Change this to the index of the station you want to plot
-start_year = 1960
-end_year = 2010
-"********************************************************************************"
 
 
+# Example usage of the helper functions
+
+"**********************************************************"
+station_to_plot = 2  # Change this to the index of the station you want to plot
+start_year = 2000
+end_year = 2020
+"***********************************************************"
+# Plot average data over raw data
 plot_average_over_raw(station_to_plot, start_year, end_year)
+
+# Plot only January and July data points
+plot_january_july(station_to_plot, start_year, end_year)
