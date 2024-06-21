@@ -14,11 +14,14 @@ Positive Correlation: If the points tend to lie along a line that slopes upward 
 Negative Correlation: If the points tend to lie along a line that slopes downward from left to right, it indicates a negative correlation. This means that when the average water level at the first station increases, the average water level at the second station tends to decrease.
 No Correlation: If the points are widely scattered with no discernible pattern, it indicates little to no correlation between the water levels at the two stations.
 """
+
+
 import os
 import scipy.io
 import matplotlib.pyplot as plt
 import numpy as np
 from datetime import datetime
+
 
 # Load the .mat file containing time references
 timeMat = scipy.io.loadmat('tchar.mat')
@@ -105,7 +108,7 @@ def plot_correlation(station_index1, station_index2):
     
     plt.figure(figsize=(10, 6))
     plt.scatter(data1, data2)
-    plt.title(f'Correlation between {station_name1} and {station_name2}')
+    plt.title(f'Correlation between {station_name1} and {station_name2} Monthly Averages')
     plt.xlabel(station_name1)
     plt.ylabel(station_name2)
     plt.grid(True)
@@ -114,13 +117,10 @@ def plot_correlation(station_index1, station_index2):
 # Plot correlation between two stations
 
 "station_index == site number "
-station_index1 = 2  # Change this to the first station index
-station_index2 = 4  # Change this to the second station index
+station_index1 =  0  # Change this to the first station index
+station_index2 = 17 # Change this to the second station index
 
 
-
-station_index = station_index - 1
-
-sttion_index2 = station_index2 - 1
 
 plot_correlation(station_index1, station_index2)
+
