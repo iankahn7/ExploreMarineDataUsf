@@ -42,7 +42,7 @@ def plot_anomaly_correlation(station_index1, station_index2):
     plt.grid(True)
     plt.show()
 
-# Function to create correlation matrices
+# Function to create correlation matrices and plot heatmaps
 def create_correlation_matrices():
     # Extract anomaly data
     anomaly_data = anomaly_df[station_names]
@@ -53,9 +53,27 @@ def create_correlation_matrices():
     # Compute the absolute value correlation matrix
     abs_correlation_matrix = correlation_matrix.abs()
 
-    # Save the correlation matrices to CSV files
-    correlation_matrix.to_csv('correlation_matrix.csv')
-    abs_correlation_matrix.to_csv('abs_correlation_matrix.csv')
+    # Plot heatmap for correlation matrix
+    plt.figure(figsize=(12, 8))
+    plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='nearest')
+    plt.colorbar()
+    plt.title('Correlation Matrix Heatmap')
+    plt.xticks(np.arange(len(station_names)), station_names, rotation=45)
+    plt.yticks(np.arange(len(station_names)), station_names)
+    plt.tight_layout()
+    plt.show()
+
+    # Plot heatmap for absolute value correlation matrix
+    plt.figure(figsize=(12, 8))
+    "plt.imshow(abs_correlation_matrix, cmap='hot', interpolation='nearest')"
+    plt.imshow(abs_correlation_matrix, cmap='hot_r', interpolation='nearest')
+
+    plt.colorbar()
+    plt.title('Absolute Value Correlation Matrix Heatmap')
+    plt.xticks(np.arange(len(station_names)), station_names, rotation=45)
+    plt.yticks(np.arange(len(station_names)), station_names)
+    plt.tight_layout()
+    plt.show()
 
     print("Correlation Matrix:")
     print(correlation_matrix)
@@ -71,5 +89,5 @@ station_index2 = 4  # Change this to the second station index
 # Plot the correlation between anomalies of the specified stations
 plot_anomaly_correlation(station_index1, station_index2)
 
-# Create and display the correlation matrices
+# Create and display the correlation matrices with heatmaps
 correlation_matrix, abs_correlation_matrix = create_correlation_matrices()
