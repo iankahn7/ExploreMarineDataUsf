@@ -69,7 +69,7 @@ def create_correlation_matrices():
     plt.imshow(abs_correlation_matrix, cmap='hot_r', interpolation='nearest')
 
     plt.colorbar()
-    plt.title('Absolute Value Correlation Matrix Heatmap')
+    plt.title('Absolute Value Anomaly Correlation Matrix:')
     plt.xticks(np.arange(len(station_names)), station_names, rotation=45)
     plt.yticks(np.arange(len(station_names)), station_names)
     plt.tight_layout()
@@ -77,7 +77,7 @@ def create_correlation_matrices():
 
     print("Correlation Matrix:")
     print(correlation_matrix)
-    print("\nAbsolute Value Correlation Matrix:")
+    print("\nAbsolute Value Anomaly Correlation Matrix:")
     print(abs_correlation_matrix)
 
     return correlation_matrix, abs_correlation_matrix

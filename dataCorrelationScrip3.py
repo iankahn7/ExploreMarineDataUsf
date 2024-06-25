@@ -94,6 +94,9 @@ plt.title(f' numpoints (minNumPoints = {minNumPoints})')
 "****************************************************************************"
 plt.show()
 "****************************************************************************"
+
+
+"+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 def plot_corr_insights(corr_matrix, abs_corrMatrix, numPts, minNumPoints, save_dir='.'):
     # Function to plot and provide insights into the correlation matrices
     
