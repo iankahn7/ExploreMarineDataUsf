@@ -14,6 +14,16 @@ station_names = anomaly_df.columns[2:]  # Skip 'Year' and 'Month' columns
 # Convert 'Year' and 'Month' to datetime for easier plotting
 anomaly_df['Date'] = pd.to_datetime(anomaly_df[['Year', 'Month']].assign(DAY=1))
 
+# Directory to save the figures
+save_dir = r'C:\Users\ikahn\Desktop\unm\IanKahn_RESUMES\ocean_sci\usf_making_waves\Research\screenshots'
+
+# Ensure the save directory exists
+os.makedirs(save_dir, exist_ok=True)
+
+# Helper function to clean station names for filenames
+def clean_name(name):
+    return name.replace(',', '').replace(' ', '_')
+
 # Helper function to plot correlation between anomalies of two stations
 def plot_anomaly_correlation(station_index1, station_index2):
     station_name1 = station_names[station_index1]
@@ -32,6 +42,9 @@ def plot_anomaly_correlation(station_index1, station_index2):
     plt.xlabel(f'{station_name1} Anomaly')
     plt.ylabel(f'{station_name2} Anomaly')
     plt.grid(True)
+    cleaned_name1 = clean_name(station_name1)
+    cleaned_name2 = clean_name(station_name2)
+    plt.savefig(os.path.join(save_dir, f'correlation_{cleaned_name1}_{cleaned_name2}.png'))
     plt.show()
 
 # Function to create correlation matrices and plot heatmaps
@@ -53,6 +66,7 @@ def create_correlation_matrices():
     plt.xticks(np.arange(len(station_names)), station_names, rotation=45, ha='right')
     plt.yticks(np.arange(len(station_names)), station_names)
     plt.tight_layout()
+    plt.savefig(os.path.join(save_dir, 'correlation_matrix_heatmap.png'))
     plt.show()
 
     # Plot heatmap for absolute value correlation matrix
@@ -63,6 +77,7 @@ def create_correlation_matrices():
     plt.xticks(np.arange(len(station_names)), station_names, rotation=45, ha='right')
     plt.yticks(np.arange(len(station_names)), station_names)
     plt.tight_layout()
+    plt.savefig(os.path.join(save_dir, 'abs_correlation_matrix_heatmap.png'))
     plt.show()
 
     print("Correlation Matrix:")
