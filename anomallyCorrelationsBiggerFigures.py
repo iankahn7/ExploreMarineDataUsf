@@ -1,11 +1,3 @@
-"""
-@author: ikahn
-
-
- plots the correlation between two specified stations
- but also generates a correlation matrix and an absolute 
- value correlation matrix for all stations.
-"""
 import os
 import scipy.io
 import matplotlib.pyplot as plt
@@ -34,7 +26,7 @@ def plot_anomaly_correlation(station_index1, station_index2):
     # Merge the dataframes on 'Date' to find common dates
     merged_data = pd.merge(station_anomalies1, station_anomalies2, on='Date')
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(14, 10))
     plt.scatter(merged_data[station_name1], merged_data[station_name2], color='blue')
     plt.title(f'Correlation between {station_name1} and {station_name2} Anomalies')
     plt.xlabel(f'{station_name1} Anomaly')
@@ -54,23 +46,21 @@ def create_correlation_matrices():
     abs_correlation_matrix = correlation_matrix.abs()
 
     # Plot heatmap for correlation matrix
-    plt.figure(figsize=(12, 8))
+    plt.figure(figsize=(20, 15))
     plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='nearest')
     plt.colorbar()
     plt.title('Correlation Matrix Heatmap')
-    plt.xticks(np.arange(len(station_names)), station_names, rotation=45)
+    plt.xticks(np.arange(len(station_names)), station_names, rotation=45, ha='right')
     plt.yticks(np.arange(len(station_names)), station_names)
     plt.tight_layout()
     plt.show()
 
     # Plot heatmap for absolute value correlation matrix
-    plt.figure(figsize=(12, 8))
-    "plt.imshow(abs_correlation_matrix, cmap='hot', interpolation='nearest')"
+    plt.figure(figsize=(20, 15))
     plt.imshow(abs_correlation_matrix, cmap='hot_r', interpolation='nearest')
-
     plt.colorbar()
-    plt.title('Absolute Value Water Level Anomaly Correlation Matrix:')
-    plt.xticks(np.arange(len(station_names)), station_names, rotation=45)
+    plt.title('Absolute Value Water Level Anomaly Correlation Matrix')
+    plt.xticks(np.arange(len(station_names)), station_names, rotation=45, ha='right')
     plt.yticks(np.arange(len(station_names)), station_names)
     plt.tight_layout()
     plt.show()
