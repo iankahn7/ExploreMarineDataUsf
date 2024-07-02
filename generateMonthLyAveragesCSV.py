@@ -57,26 +57,37 @@ for key, values in monthly_averages.items():
 
 # Creating a sorted list of all unique (year, month) pairs
 dates = sorted(set((key[0], key[1]) for key in average_matrix.keys()))
-date_labels = [f"{year}-{month:02d}" for year, month in dates]
 
 # Prepare data for CSV files
-average_data = pd.DataFrame(index=station_names, columns=date_labels)
-good_points_data = pd.DataFrame(index=station_names, columns=date_labels)
+average_data = []
+good_points_data = []
+
+# Adding "Year" and "Month" headers to the data
+average_data.append(["Year", "Month"] + station_names)
+good_points_data.append(["Year", "Month"] + station_names)
 
 # Populate the dataframes with the calculated values
-for station_index, station_name in enumerate(station_names):
-    for (year, month) in dates:
-        average_data.loc[station_name, f"{year}-{month:02d}"] = average_matrix.get((year, month, station_index), np.nan)
-        good_points_data.loc[station_name, f"{year}-{month:02d}"] = good_points_matrix.get((year, month, station_index), np.nan)
+for (year, month) in dates:
+    average_row = [year, month]
+    good_points_row = [year, month]
+    for station_index in range(len(station_names)):
+        average_row.append(average_matrix.get((year, month, station_index), np.nan))
+        good_points_row.append(good_points_matrix.get((year, month, station_index), np.nan))
+    average_data.append(average_row)
+    good_points_data.append(good_points_row)
+
+# Convert to DataFrame
+average_df = pd.DataFrame(average_data[1:], columns=average_data[0])
+good_points_df = pd.DataFrame(good_points_data[1:], columns=good_points_data[0])
 
 # Save to CSV files
-average_data.to_csv('monthly_average_water_levels.csv')
-good_points_data.to_csv('monthly_good_points_count.csv')
+average_df.to_csv('monthly_average_water_levels.csv', index=False)
+good_points_df.to_csv('monthly_good_points_count.csv', index=False)
 
 # Display some of the average data for verification if testingFlag is set to True
 testingFlag = True
 if testingFlag:
     print("Monthly Average Water Levels")
-    print(average_data.head(10))
+    print(average_df.head(10))
     print("Monthly Good Points Count")
-    print(good_points_data.head(10))
+    print(good_points_df.head(10))

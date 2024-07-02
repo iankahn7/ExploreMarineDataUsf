@@ -9,12 +9,6 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 
-
-
-
-"""
-start with year of 1975 and make sure that threre is at least 20 years of data
-"""
 # Load the anomalies CSV file
 anomaly_df = pd.read_csv('monthly_anomalies.csv')
 
@@ -48,7 +42,7 @@ def plot_anomaly_correlation(station_index1, station_index2):
 
     plt.figure(figsize=(14, 10))
     plt.scatter(merged_data[station_name1], merged_data[station_name2], color='blue')
-    plt.title(f'NOAA Tide Gauge Monthly Anomalies: {station_name1} and {station_name2} ')
+    plt.title(f'Correlation between {station_name1} and {station_name2} Anomalies')
     plt.xlabel(f'{station_name1} Anomaly')
     plt.ylabel(f'{station_name2} Anomaly')
     plt.grid(True)
@@ -58,9 +52,12 @@ def plot_anomaly_correlation(station_index1, station_index2):
     plt.show()
 
 # Function to create correlation matrices and plot heatmaps
-def create_correlation_matrices():
+def create_correlation_matrices(start_year, end_year):
+    # Filter data for the specified year range
+    filtered_df = anomaly_df[(anomaly_df['Date'].dt.year >= start_year) & (anomaly_df['Date'].dt.year <= end_year)]
+
     # Extract anomaly data
-    anomaly_data = anomaly_df[station_names]
+    anomaly_data = filtered_df[station_names]
 
     # Compute the correlation matrix
     correlation_matrix = anomaly_data.corr()
@@ -72,27 +69,27 @@ def create_correlation_matrices():
     plt.figure(figsize=(20, 15))
     plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='nearest')
     plt.colorbar()
-    plt.title('Correlation NOAA monthly tide gauge anomalies')
+    plt.title(f'Correlation Monthly Tide Gauge Anomallies ({start_year}-{end_year})')
     plt.xticks(np.arange(len(station_names)), station_names, rotation=45, ha='right')
     plt.yticks(np.arange(len(station_names)), station_names)
     plt.tight_layout()
-    plt.savefig(os.path.join(save_dir, 'correlation_matrix_heatmap.png'))
+    plt.savefig(os.path.join(save_dir, f'correlation_matrix_heatmap_{start_year}_{end_year}.png'))
     plt.show()
 
     # Plot heatmap for absolute value correlation matrix
     plt.figure(figsize=(20, 15))
     plt.imshow(abs_correlation_matrix, cmap='hot_r', interpolation='nearest')
     plt.colorbar()
-    plt.title('Absolute Value Water Level Anomaly Correlation Matrix')
+    plt.title(f'Absolute Value Water Level Anomaly Correlation Matrix ({start_year}-{end_year})')
     plt.xticks(np.arange(len(station_names)), station_names, rotation=45, ha='right')
     plt.yticks(np.arange(len(station_names)), station_names)
     plt.tight_layout()
-    plt.savefig(os.path.join(save_dir, 'abs_correlation_matrix_heatmap.png'))
+    plt.savefig(os.path.join(save_dir, f'abs_correlation_matrix_heatmap_{start_year}_{end_year}.png'))
     plt.show()
 
-    print("Correlation Matrix:")
+    print(f"Correlation Matrix ({start_year}-{end_year}):")
     print(correlation_matrix)
-    print("\nAbsolute Value Anomaly Correlation Matrix:")
+    print(f"\nAbsolute Value Anomaly Correlation Matrix ({start_year}-{end_year}):")
     print(abs_correlation_matrix)
 
     return correlation_matrix, abs_correlation_matrix
@@ -101,8 +98,12 @@ def create_correlation_matrices():
 station_index1 = 2  # Change this to the first station index
 station_index2 = 4  # Change this to the second station index
 
+# Specify the year range for the heatmap graphs
+start_year = 2000  # Change this to the desired start year
+end_year = 2022    # Change this to the desired end year
+
 # Plot the correlation between anomalies of the specified stations
 plot_anomaly_correlation(station_index1, station_index2)
 
 # Create and display the correlation matrices with heatmaps
-correlation_matrix, abs_correlation_matrix = create_correlation_matrices()
+correlation_matrix, abs_correlation_matrix = create_correlation_matrices(start_year, end_year)
