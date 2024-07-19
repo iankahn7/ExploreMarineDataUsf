@@ -133,9 +133,9 @@ def plot_january_july(station_index, start_year, end_year):
 # Example usage of the helper functions
 
 "**********************************************************"
-station_to_plot = 2  # Change this to the index of the station you want to plot
-start_year = 2000
-end_year = 2020
+station_to_plot = 14  # Change this to the index of the station you want to plot
+start_year = 1975
+end_year = 2022
 "***********************************************************"
 # Plot average data over raw data
 plot_average_over_raw(station_to_plot, start_year, end_year)

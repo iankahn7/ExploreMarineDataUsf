@@ -99,7 +99,7 @@ station_index1 = 2  # Change this to the first station index
 station_index2 = 4  # Change this to the second station index
 
 # Specify the year range for the heatmap graphs
-start_year = 2000  # Change this to the desired start year
+start_year = 1975  # Change this to the desired start year
 end_year = 2022    # Change this to the desired end year
 
 # Plot the correlation between anomalies of the specified stations

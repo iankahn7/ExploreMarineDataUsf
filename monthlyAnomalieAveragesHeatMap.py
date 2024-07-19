@@ -1,66 +1,63 @@
-import os
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jun 20 12:06:58 2024
 
-# Load the anomalies CSV file
-anomaly_df = pd.read_csv('monthly_anomalies.csv')
+@author: Ian Kahn
+
+This script reads monthly anomalies data and creates a heatmap of the correlation matrix for all stations.
+"""
+
+import os
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load the monthly anomalies CSV file
+anomaly_file_path = r'C:\Users\ikahn\Desktop\unm\IanKahn_RESUMES\ocean_sci\usf_making_waves\Research\ExploreMarineDataUsf\monthly_anomalies.csv'
+anomaly_df = pd.read_csv(anomaly_file_path)
+
+# Transpose the DataFrame to have dates as rows and stations as columns
+anomaly_df = anomaly_df.transpose()
+
+# Set the first row as the header
+anomaly_df.columns = anomaly_df.iloc[0]
+anomaly_df = anomaly_df.drop(anomaly_df.index[0])
+
+# Reset the index to get dates as a column
+anomaly_df = anomaly_df.reset_index().rename(columns={'index': 'Date'})
+
+# Convert the 'Date' column to datetime
+anomaly_df['Date'] = pd.to_datetime(anomaly_df['Date'], format='%Y-%m')
+
+# Melt the DataFrame to long format
+anomaly_df = anomaly_df.melt(id_vars=['Date'], var_name='Station', value_name='Anomaly')
+
+# Pivot the DataFrame to have stations as columns
+anomaly_df = anomaly_df.pivot(index='Date', columns='Station', values='Anomaly')
 
 # Extract station names from the columns
-station_names = anomaly_df.columns[2:]  # Skip 'Year' and 'Month' columns
+station_names = anomaly_df.columns
 
-# Convert 'Year' and 'Month' to datetime for easier plotting
-anomaly_df['Date'] = pd.to_datetime(anomaly_df[['Year', 'Month']].assign(DAY=1))
+# Print the anomaly_df to check if the data is correctly processed
+print(anomaly_df.head())
 
-# Directory to save the figures
-save_dir = r'C:\Users\ikahn\Desktop\unm\IanKahn_RESUMES\ocean_sci\usf_making_waves\Research\screenshots'
-
-# Ensure the save directory exists
-os.makedirs(save_dir, exist_ok=True)
-
-# Helper function to clean station names for filenames
-def clean_name(name):
-    return name.replace(',', '').replace(' ', '_')
-
-# Helper function to plot correlation between anomalies of two stations
-def plot_anomaly_correlation(station_index1, station_index2):
-    station_name1 = station_names[station_index1]
-    station_name2 = station_names[station_index2]
-
-    # Filter data for the specified stations
-    station_anomalies1 = anomaly_df[['Date', station_name1]].dropna()
-    station_anomalies2 = anomaly_df[['Date', station_name2]].dropna()
-
-    # Merge the dataframes on 'Date' to find common dates
-    merged_data = pd.merge(station_anomalies1, station_anomalies2, on='Date')
-
-    plt.figure(figsize=(14, 10))
-    plt.scatter(merged_data[station_name1], merged_data[station_name2], color='blue')
-    plt.title(f'NOAA Tide Gauge Monthly Anomalies: {station_name1} and {station_name2} ')
-    plt.xlabel(f'{station_name1} Anomaly')
-    plt.ylabel(f'{station_name2} Anomaly')
-    plt.grid(True)
-    cleaned_name1 = clean_name(station_name1)
-    cleaned_name2 = clean_name(station_name2)
-    plt.savefig(os.path.join(save_dir, f'correlation_{cleaned_name1}_{cleaned_name2}.png'))
-    plt.show()
-
-# Function to create correlation matrices and plot heatmaps
+# Create correlation matrices and plot heatmaps
 def create_correlation_matrices():
-    # Extract anomaly data
-    anomaly_data = anomaly_df[station_names]
-
     # Compute the correlation matrix
-    correlation_matrix = anomaly_data.corr()
+    correlation_matrix = anomaly_df.corr()
 
     # Compute the absolute value correlation matrix
     abs_correlation_matrix = correlation_matrix.abs()
 
+    # Directory to save the figures
+    save_dir = r'C:\Users\ikahn\Desktop\unm\IanKahn_RESUMES\ocean_sci\usf_making_waves\Research\screenshots'
+    os.makedirs(save_dir, exist_ok=True)
+
     # Plot heatmap for correlation matrix
     plt.figure(figsize=(10, 7))
-    heatmap = plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='nearest')
+    plt.imshow(correlation_matrix, cmap='coolwarm', interpolation='nearest')
     plt.colorbar()
-    plt.title('Correlation NOAA monthly tide gauge anomalies')
+    plt.title('Correlation NOAA Monthly Tide Gauge Anomalies')
     plt.xticks(np.arange(len(station_names)), station_names, rotation=45, ha='right')
     plt.yticks(np.arange(len(station_names)), station_names)
     
@@ -76,7 +73,7 @@ def create_correlation_matrices():
 
     # Plot heatmap for absolute value correlation matrix
     plt.figure(figsize=(10, 7))
-    heatmap = plt.imshow(abs_correlation_matrix, cmap='hot_r', interpolation='nearest')
+    plt.imshow(abs_correlation_matrix, cmap='hot_r', interpolation='nearest')
     plt.colorbar()
     plt.title('Absolute Value Water Level Anomaly Correlation Matrix')
     plt.xticks(np.arange(len(station_names)), station_names, rotation=45, ha='right')
@@ -98,13 +95,6 @@ def create_correlation_matrices():
     print(abs_correlation_matrix)
 
     return correlation_matrix, abs_correlation_matrix
-
-# Specify station indices
-station_index1 = 2  # Change this to the first station index
-station_index2 = 4  # Change this to the second station index
-
-# Plot the correlation between anomalies of the specified stations
-plot_anomaly_correlation(station_index1, station_index2)
 
 # Create and display the correlation matrices with heatmaps
 correlation_matrix, abs_correlation_matrix = create_correlation_matrices()

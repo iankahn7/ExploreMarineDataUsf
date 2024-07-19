@@ -15,7 +15,7 @@ import pandas as pd
 from scipy.stats import pearsonr
 
 # Load the anomalies CSV file
-anomaly_df = pd.read_csv('monthly_anomalies.csv')
+anomaly_df = pd.read_csv('anomalies.csv')
 
 # Extract station names from the columns
 station_names = anomaly_df.columns[2:]  # Skip 'Year' and 'Month' columns

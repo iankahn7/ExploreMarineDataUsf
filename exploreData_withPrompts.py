@@ -110,7 +110,7 @@ def plot_data_with_date_range(start_date, end_date):
     
     plt.figure(figsize=(10, 6))
     plt.plot(filtered_timeStamps, filtered_data)
-    plt.title(f'Plot of Water Level (CM) at {strippedName} from {start_date} to {end_date}')
+    plt.title(f'Water Level (CM) at {strippedName} from {start_date} to {end_date}')
     plt.xlabel('Time')
     plt.ylabel('Water Level (CM)')
 
@@ -122,6 +122,8 @@ def plot_data_with_date_range(start_date, end_date):
 
 '*****************************************************************************************************************'
 
+# to do : add monthly average overlay , add the trend overlay to figure and increase font size on the figure
+
 # Line plot of data at the given index
 grabbedName = name[grabIndex][0][0]
 strippedName = grabbedName.strip()
@@ -129,7 +131,7 @@ dataGrab = noaa_raw[:, grabIndex]
 
 plt.figure(figsize=(10, 6))
 plt.plot(timeStamps,dataGrab)
-plt.title(f'Plot of Water Level (CM) at {strippedName} in noaa_raw data set')
+plt.title(f'Water Level at {strippedName}')
 plt.xlabel('Time')
 plt.ylabel('Water Level (CM)')
 
