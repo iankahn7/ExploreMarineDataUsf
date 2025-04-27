@@ -1,4 +1,9 @@
 # ExploreMarineDataUsf
+
+# **Sub-Tidal Water Levels on the Coast of Florida from Tide Gauges**
+
+![Poster Image](images/finalPoster.png)
+
 Project Overview
 This project, led by Dr. Meyers, focuses on analyzing marine water level data and generating comprehensive visualizations to enhance data interpretation. Using Python, the research investigates monthly anomalies in water levels across various NOAA tide gauge stations.
 
