@@ -2,6 +2,12 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+"""
+
+
+"""
+
+
 # File path for the anomalies CSV file
 anomalies_file_path = r'C:\Users\ikahn\Desktop\unm\IanKahn_RESUMES\ocean_sci\usf_making_waves\Research\ExploreMarineDataUsf\posterScripts\anomalies.csv'
 
@@ -48,3 +54,8 @@ output_image_path = r'C:\Users\ikahn\Desktop\unm\IanKahn_RESUMES\ocean_sci\usf_m
 plt.savefig(output_image_path)
 
 print(f"Heatmap saved to {output_image_path}. Please open the image file to view it.")
+
+
+"""
+de trend the stations 
+""" 
